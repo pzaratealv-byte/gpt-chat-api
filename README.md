@@ -53,3 +53,29 @@ API REST en PHP para integrar chat con inteligencia artificial (OpenAI GPT-4) y 
 ```bash
 git clone https://github.com/tuusuario/gpt-chat-api.git
 cd gpt-chat-api
+
+## 🚀 Estructura
+gpt-chat-api/
+│
+├── 📄 README.md          ← Documentación para GitHub
+├── 📄 LICENSE            ← Licencia MIT
+├── 📄 .gitignore         ← ficheros opcionales
+│
+├── 📁 api/               ← CÓDIGO PRINCIPAL (backend)
+│   │
+│   ├── auth.php          ← Login/logout (protección con contraseña)
+│   ├── chat.php          ← Chat con GPT-4 (lo más importante)
+│   ├── generate-image.php ← Generar imágenes con DALL-E
+│   ├── send-email.php    ← Enviar conversaciones por email
+│   ├── config-endpoint.php ← Configuración pública del asistente
+│   ├── health.php        ← Verificar que todo funciona
+│   │
+│   └── config.example.php ← EJEMPLO de configuración (sin datos reales)
+│                            ↑
+│                            └── Copias esto a config.php en tu servidor
+│
+└── 📁 examples/          ← EJEMPLOS de cómo usar la API
+    │
+    ├── javascript-example.html  ← Ejemplo en JavaScript
+    ├── python_example.py        ← Ejemplo en Python
+    └── curl_examples.sh         ← Ejemplos con comandos cURL
