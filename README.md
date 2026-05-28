@@ -1,6 +1,6 @@
-# 🤖 Chatbot de Marketing Digital
+# 🤖 Chatbot con IA — PHP + OpenAI
 
-> TFM — Asistente conversacional especializado en marketing digital, con límite de tokens por sesión, historial de conversación y envío de transcripciones por correo.
+> Asistente conversacional web configurable, con límite de tokens por sesión, historial de conversación y envío de transcripciones por correo. Desplegable en cualquier hosting PHP sin dependencias externas.
 
 ---
 
@@ -12,26 +12,28 @@
 - [Requisitos](#requisitos)
 - [Instalación](#instalación)
 - [Configuración](#configuración)
-- [Personalización (HTML y CSS)](#personalización-html-y-css)
+- [Crear index.php y styles.css](#crear-indexphp-y-stylescss)
+- [Personalizar el comportamiento del bot](#personalizar-el-comportamiento-del-bot)
 - [Uso](#uso)
 - [Arquitectura técnica](#arquitectura-técnica)
 - [Seguridad](#seguridad)
+- [Solución de problemas](#solución-de-problemas)
 - [Licencia](#licencia)
 
 ---
 
 ## Descripción
 
-Chatbot web especializado en **marketing digital**, pensado como herramienta de apoyo para estudiantes de Formación Profesional. Responde preguntas sobre SEO, redes sociales, publicidad online, email marketing, analítica web, copywriting y estrategia digital.
+Chatbot web construido en **PHP puro** (sin frameworks) que se conecta a la API de OpenAI. El comportamiento del asistente se define mediante un system prompt completamente personalizable en `chat.php`, por lo que puede adaptarse a cualquier dominio o especialidad.
 
-Está construido en PHP puro (sin frameworks), se conecta a la API de OpenAI y puede desplegarse directamente en cualquier hosting con Plesk o cPanel.
+La interfaz visual (`index.php` + `styles.css`) la crea el usuario final según sus necesidades. Este repositorio incluye toda la lógica de backend lista para conectar.
 
 ---
 
 ## Características
 
 - 💬 **Chat conversacional** con historial de sesión completo
-- 🧠 **System prompt especializado** — solo responde sobre marketing digital
+- 🧠 **System prompt configurable** — define la especialidad y las reglas del asistente
 - 🔢 **Limitador de tokens por sesión** con indicador visual en tiempo real
 - 🔄 **Reset de conversación** sin recargar la página
 - 📧 **Envío de transcripción por email** vía SMTP propio (sin dependencias externas)
@@ -44,8 +46,8 @@ Está construido en PHP puro (sin frameworks), se conecta a la API de OpenAI y p
 
 ```
 /
-├── index.php          # Interfaz principal (HTML + lógica de vista)  ← personalizable
-├── styles.css         # Estilos visuales del chatbot                 ← personalizable
+├── index.php          # ✏️ Interfaz HTML — CREAR por el usuario
+├── styles.css         # ✏️ Estilos visuales — CREAR por el usuario
 ├── script.js          # Lógica cliente: envío, reset, modal de email
 ├── chat.php           # Backend: recibe mensajes, llama a OpenAI, devuelve respuesta
 ├── reset.php          # Limpia el historial de sesión
@@ -55,7 +57,7 @@ Está construido en PHP puro (sin frameworks), se conecta a la API de OpenAI y p
 └── README.md
 ```
 
-> **Nota:** `index.php` y `styles.css` son los únicos archivos pensados para personalización visual. El resto implementa la lógica del sistema.
+> `index.php` y `styles.css` son los únicos archivos que el usuario debe crear desde cero. El resto del backend está listo para usar.
 
 ---
 
@@ -76,59 +78,51 @@ Está construido en PHP puro (sin frameworks), se conecta a la API de OpenAI y p
 ### 1. Clonar o descargar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/chatbot-marketing.git
+git clone https://github.com/tu-usuario/chatbot-php-openai.git
 ```
 
 ### 2. Subir los archivos al hosting
 
-Sube **todos los archivos** al directorio raíz de tu dominio, normalmente `/httpdocs` en Plesk o `public_html` en cPanel.
-
-```
-/httpdocs/
-├── index.php
-├── styles.css
-├── script.js
-├── chat.php
-├── reset.php
-├── send_email.php
-├── smtp_mailer.php
-└── config.php
-```
+Sube todos los archivos al directorio raíz del dominio (`/httpdocs` en Plesk, `public_html` en cPanel).
 
 ### 3. Configurar `config.php`
 
 Edita el archivo con tus credenciales reales (ver sección [Configuración](#configuración)).
 
-### 4. Verificar
+### 4. Crear `index.php` y `styles.css`
 
-Abre tu dominio en el navegador. Si el chat responde, todo está funcionando.
+Crea la interfaz visual (ver sección [Crear index.php y styles.css](#crear-indexphp-y-stylescss)).
+
+### 5. Verificar
+
+Abre tu dominio. Si el chat responde, todo está funcionando.
 
 ---
 
 ## Configuración
 
-Edita `config.php` con tus datos reales:
+Edita `config.php` con tus datos:
 
 ```php
 <?php
 return [
     // --- OpenAI ---
     'openai_api_key' => 'sk-proj-XXXXXXXXXXXXXXXXXXXXXXXX',
-    'model'          => 'gpt-4o-mini',   // o 'gpt-4', 'gpt-4o', etc.
+    'model'          => 'gpt-4o-mini',   // o 'gpt-4', 'gpt-4o'
 
     // --- Identidad del chatbot ---
-    'from_name'      => 'Chatbot Marketing',
+    'from_name'      => 'Mi Chatbot',
     'site_name'      => 'tudominio.es',
 
     // --- Límite de tokens por conversación ---
     'max_tokens'     => 4000,
 
     // --- SMTP ---
-    'smtp_host'      => 'mail.tudominio.es',  // o 'tudominio.es' si aplica
-    'smtp_port'      => 587,                  // 587 para TLS, 465 para SSL
-    'smtp_secure'    => 'tls',                // 'tls' o 'ssl'
+    'smtp_host'      => 'mail.tudominio.es',
+    'smtp_port'      => 587,          // 587 (TLS) o 465 (SSL)
+    'smtp_secure'    => 'tls',        // 'tls' o 'ssl'
     'smtp_username'  => 'chatbot@tudominio.es',
-    'smtp_password'  => 'tu_contraseña_real',
+    'smtp_password'  => 'contraseña_del_buzón',
     'from_email'     => 'chatbot@tudominio.es',
 ];
 ```
@@ -137,87 +131,385 @@ return [
 
 | Modelo | Coste | Recomendado para |
 |---|---|---|
-| `gpt-4o-mini` | Bajo | Uso general, estudiantes |
+| `gpt-4o-mini` | Bajo | Uso general |
 | `gpt-4o` | Medio | Mayor calidad de respuesta |
 | `gpt-4` | Alto | Máxima precisión |
 
-### Configuración SMTP habitual en Plesk
+---
 
-```
-smtp_host:    mail.tudominio.es  (o solo tudominio.es)
-smtp_port:    587
-smtp_secure:  tls
-smtp_username: chatbot@tudominio.es
-smtp_password: [contraseña del buzón en Plesk]
+## Crear index.php y styles.css
+
+Estos dos archivos son la capa visual del chatbot. A continuación se muestra una estructura mínima funcional que puedes usar como punto de partida y personalizar a tu gusto.
+
+### IDs y clases requeridos por `script.js`
+
+`script.js` ya está escrito y busca estos elementos en el HTML. **Deben existir con exactamente estos IDs:**
+
+| ID | Elemento | Descripción |
+|---|---|---|
+| `chatMessages` | `<div>` | Contenedor donde aparecen los mensajes |
+| `msg` | `<textarea>` | Campo de texto del usuario |
+| `sendBtn` | `<button>` | Botón de enviar mensaje |
+| `resetBtn` | `<button>` | Botón de nueva conversación |
+| `typingIndicator` | `<div>` | Indicador de "escribiendo..." |
+| `tokenCounter` | `<div>` | Contenedor del contador de tokens |
+| `tokenCount` | `<span>` | Número de tokens restantes |
+| `emailBtn` | `<button>` | Abre el modal de envío por email |
+| `emailModal` | `<div>` | Modal de envío por email |
+| `closeModalBtn` | `<button>` | Cierra el modal |
+| `confirmEmailBtn` | `<button>` | Confirma el envío del email |
+| `emailInput` | `<input>` | Campo de dirección de email |
+| `subjectInput` | `<input>` | Campo de asunto del email |
+| `emailFeedback` | `<span>` | Mensaje de resultado del envío |
+
+Los botones de sugerencias rápidas son opcionales: cualquier elemento con clase `suggestion` y atributo `data-text="..."` rellena automáticamente el campo de texto al pulsarlo.
+
+---
+
+### Plantilla mínima — `index.php`
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Chatbot</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="chat-container">
+
+        <!-- CABECERA -->
+        <header class="chat-header">
+            <h1>Mi Chatbot</h1>
+            <div class="header-actions">
+                <div id="tokenCounter">
+                    Tokens: <span id="tokenCount">4000</span>
+                </div>
+                <button id="emailBtn">Enviar conversación</button>
+                <button id="resetBtn">Nueva conversación</button>
+            </div>
+        </header>
+
+        <!-- SUGERENCIAS RÁPIDAS (opcional) -->
+        <div class="suggestions">
+            <button class="suggestion" data-text="¿Qué puedes hacer?">¿Qué puedes hacer?</button>
+            <button class="suggestion" data-text="Ayúdame con un ejemplo">Dame un ejemplo</button>
+        </div>
+
+        <!-- ÁREA DE MENSAJES -->
+        <main id="chatMessages" class="chat-messages">
+            <!-- Mensaje de bienvenida -->
+            <div class="message bot">
+                <div class="avatar">BOT</div>
+                <div class="bubble">
+                    <p>Hola, ¿en qué puedo ayudarte?</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- INDICADOR "ESCRIBIENDO..." -->
+        <div id="typingIndicator" class="typing hidden">
+            <span></span><span></span><span></span>
+        </div>
+
+        <!-- CAMPO DE ENTRADA -->
+        <footer class="chat-footer">
+            <textarea id="msg" placeholder="Escribe tu mensaje..." rows="1"></textarea>
+            <button id="sendBtn">Enviar</button>
+        </footer>
+
+    </div>
+
+    <!-- MODAL DE EMAIL -->
+    <div id="emailModal" class="modal hidden">
+        <div class="modal-box">
+            <h2>Enviar conversación por email</h2>
+            <input id="emailInput" type="email" placeholder="correo@ejemplo.com">
+            <input id="subjectInput" type="text" placeholder="Asunto (opcional)">
+            <span id="emailFeedback"></span>
+            <div class="modal-actions">
+                <button id="confirmEmailBtn">Enviar</button>
+                <button id="closeModalBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
 ```
 
 ---
 
-## Personalización (HTML y CSS)
-
-Los únicos archivos que necesitas modificar para adaptar el chatbot a tu imagen son:
-
-### `index.php` — Estructura HTML
-
-Contiene la interfaz visible: cabecera, área de mensajes, campo de entrada, botones de sugerencias y modal de email.
-
-Elementos clave que puedes cambiar:
-
-```html
-<!-- Nombre/logo del chatbot -->
-<h1>Tu Asistente de Marketing</h1>
-
-<!-- Subtítulo o descripción -->
-<p>Especialista en SEO, redes sociales y publicidad digital</p>
-
-<!-- Botones de sugerencias rápidas -->
-<button class="suggestion" data-text="¿Cómo mejoro mi posicionamiento SEO?">
-    SEO
-</button>
-```
-
-### `styles.css` — Diseño visual
-
-El archivo de estilos controla colores, tipografía, espaciado y animaciones. Variables CSS recomendadas para centralizar tu identidad visual:
+### Plantilla mínima — `styles.css`
 
 ```css
+/* ── Variables — cambia aquí los colores y fuentes ── */
 :root {
-    --color-primary:    #4f46e5;   /* Color principal (botones, avatar bot) */
-    --color-secondary:  #7c3aed;   /* Acento / degradados */
-    --color-bg:         #0f172a;   /* Fondo general */
-    --color-surface:    #1e293b;   /* Fondo de burbujas y paneles */
-    --color-text:       #f1f5f9;   /* Texto principal */
-    --color-muted:      #94a3b8;   /* Texto secundario */
-    --radius-bubble:    1.25rem;   /* Redondeo de los mensajes */
-    --font-main:        'Inter', sans-serif;
+    --color-bg:       #0f172a;
+    --color-surface:  #1e293b;
+    --color-primary:  #4f46e5;
+    --color-text:     #f1f5f9;
+    --color-muted:    #94a3b8;
+    --radius:         0.75rem;
+    --font:           system-ui, sans-serif;
 }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Contenedor principal */
+.chat-container {
+    width: 100%;
+    max-width: 720px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+}
+
+/* Cabecera */
+.chat-header {
+    padding: 1rem 1.25rem;
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+.chat-header h1 { font-size: 1.1rem; }
+.header-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.header-actions button {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+.header-actions button:hover { background: rgba(255,255,255,0.25); }
+
+/* Sugerencias */
+.suggestions {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    flex-wrap: wrap;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.suggestion {
+    background: transparent;
+    border: 1px solid var(--color-muted);
+    color: var(--color-muted);
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+.suggestion:hover { border-color: var(--color-primary); color: var(--color-text); }
+
+/* Área de mensajes */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Mensajes */
+.message { display: flex; gap: 0.75rem; align-items: flex-start; }
+.message.user { flex-direction: row-reverse; }
+
+.avatar {
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.message.user .avatar { background: var(--color-muted); }
+
+.bubble {
+    max-width: 75%;
+    background: rgba(255,255,255,0.06);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+.message.user .bubble { background: var(--color-primary); }
+.bubble p + p { margin-top: 0.5rem; }
+
+/* Indicador typing */
+.typing {
+    padding: 0.5rem 1.25rem;
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+}
+.typing.hidden { display: none; }
+.typing span {
+    width: 7px; height: 7px;
+    background: var(--color-muted);
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40%           { transform: translateY(-6px); }
+}
+
+/* Pie de entrada */
+.chat-footer {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
+}
+#msg {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--color-text);
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius);
+    resize: none;
+    font-family: var(--font);
+    font-size: 0.9rem;
+}
+#msg:focus { outline: none; border-color: var(--color-primary); }
+#sendBtn {
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    padding: 0 1.25rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 600;
+}
+#sendBtn:hover { opacity: 0.85; }
+#sendBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Modal */
+.modal {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+}
+.modal.hidden { display: none; }
+.modal-box {
+    background: var(--color-surface);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    width: min(400px, 90vw);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.modal-box h2 { font-size: 1rem; }
+.modal-box input {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--color-text);
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+}
+.modal-box input:focus { outline: none; border-color: var(--color-primary); }
+#emailFeedback { font-size: 0.8rem; color: var(--color-muted); min-height: 1rem; }
+.modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+.modal-actions button {
+    padding: 0.45rem 1rem;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+#confirmEmailBtn { background: var(--color-primary); color: #fff; }
+#closeModalBtn { background: rgba(255,255,255,0.1); color: var(--color-text); }
+
+/* Contador de tokens */
+#tokenCounter {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .bubble { max-width: 90%; }
+    .chat-header h1 { font-size: 0.95rem; }
+}
+```
+
+---
+
+## Personalizar el comportamiento del bot
+
+Edita la variable `$systemPrompt` en `chat.php` para definir la especialidad, el tono y las reglas del asistente:
+
+```php
+$systemPrompt = <<<PROMPT
+Eres un asistente especializado en [TU TEMÁTICA].
+
+PUEDES responder preguntas sobre:
+- [Tema 1]
+- [Tema 2]
+- [Tema 3]
+
+Si el usuario pregunta sobre algo fuera de tu especialidad, responde educadamente
+que solo puedes ayudar con [TU TEMÁTICA].
+
+Responde siempre en español, de forma clara y con ejemplos prácticos.
+PROMPT;
 ```
 
 ---
 
 ## Uso
 
-### Enviar un mensaje
+**Enviar un mensaje** — escribe en el campo de texto y pulsa Enter o el botón Enviar.
 
-Escribe en el campo de texto y pulsa **Enter** o el botón de enviar. También puedes usar los botones de sugerencias rápidas.
+**Sugerencias rápidas** — pulsa cualquier botón de sugerencia para rellenar el campo de texto automáticamente.
 
-### Nueva conversación
+**Nueva conversación** — limpia el historial y reinicia el contador de tokens.
 
-Pulsa **"Nueva conversación"** para limpiar el historial y reiniciar el contador de tokens.
+**Enviar por email** — pulsa "Enviar conversación", introduce el email de destino y el asunto, y confirma.
 
-### Enviar transcripción por email
+**Contador de tokens** — indica los tokens restantes en la sesión actual:
 
-1. Pulsa el botón **"Enviar conversación"** (en la cabecera)
-2. Introduce la dirección de destino y el asunto
-3. Pulsa **"Enviar"** — recibirás el historial completo en texto plano
-
-### Contador de tokens
-
-El indicador en la cabecera muestra los tokens restantes en la sesión:
-
-- 🟢 **> 1500** — Normal
-- 🟡 **500–1500** — Aviso
-- 🔴 **< 500** — Próximo al límite
+| Color | Tokens restantes |
+|---|---|
+| 🟢 Normal | > 1500 |
+| 🟡 Aviso | 500 – 1500 |
+| 🔴 Límite próximo | < 500 |
 
 ---
 
@@ -227,57 +519,39 @@ El indicador en la cabecera muestra los tokens restantes en la sesión:
 Navegador (script.js)
     │
     ├── POST /chat.php          → Envía mensaje del usuario
-    │       │
     │       ├── $_SESSION['chat_history']   Historial acumulado
-    │       ├── Calcula tokens usados       Aproximación: strlen / 3.5
+    │       ├── Calcula tokens usados       ceil(strlen_utf8 / 3.5)
     │       └── POST api.openai.com/v1/responses   cURL
     │
     ├── POST /reset.php         → Limpia sesión y reinicia tokens
     │
     └── POST /send_email.php    → Solicita envío de transcripción
-            │
             └── smtp_mailer.php
                     └── stream_socket_client()   Conexión SMTP raw
 ```
 
-### Estimación de tokens
+**Estimación de tokens:** fórmula `ceil(strlen_utf8 / 3.5)`, aproximación conservadora para texto en español. No requiere la librería tiktoken ni llamadas adicionales a la API.
 
-La estimación usa la fórmula `ceil(strlen_utf8 / 3.5)`, que aproxima de forma conservadora el consumo en español. No es exacta respecto a la tokenización real de OpenAI (tiktoken), pero evita llamadas adicionales a la API.
-
-### Mailer SMTP
-
-`smtp_mailer.php` implementa el protocolo SMTP directamente con sockets PHP (`stream_socket_client`), sin depender de PHPMailer ni SwiftMailer. Soporta:
-
-- Conexión directa SSL (puerto 465)
-- STARTTLS (puerto 587)
-- Autenticación AUTH LOGIN
-- Codificación UTF-8 con subject en Base64
+**Mailer SMTP:** `smtp_mailer.php` implementa el protocolo SMTP con sockets PHP sin dependencias externas. Soporta SSL (465), STARTTLS (587), AUTH LOGIN y codificación UTF-8.
 
 ---
 
 ## Seguridad
 
-> ⚠️ **Nunca subas `config.php` a un repositorio público.** Contiene tu API key de OpenAI y las credenciales SMTP.
+> ⚠️ **Nunca subas `config.php` a un repositorio público.** Contiene la API key de OpenAI y las credenciales SMTP.
 
-### Recomendaciones
-
-1. **Añade `config.php` al `.gitignore`:**
-
+**Añade `config.php` al `.gitignore`:**
 ```
-# .gitignore
 config.php
 ```
 
-2. **Usa variables de entorno** en producción en lugar de valores hardcodeados:
-
+**Usa variables de entorno** en producción:
 ```php
 'openai_api_key' => getenv('OPENAI_API_KEY'),
 'smtp_password'  => getenv('SMTP_PASSWORD'),
 ```
 
-3. **Limita el acceso a los archivos PHP** que no deben ser llamados directamente por el usuario (reset.php, send_email.php) con reglas en `.htaccess` si es necesario.
-
-4. **Rota la API key** si ha sido expuesta en algún momento desde el [dashboard de OpenAI](https://platform.openai.com/api-keys).
+**Rota la API key** si ha sido expuesta desde el [dashboard de OpenAI](https://platform.openai.com/api-keys).
 
 ---
 
@@ -287,9 +561,10 @@ config.php
 |---|---|---|
 | El chat no responde | API key inválida o sin crédito | Revisa la key en OpenAI Platform |
 | Error de conexión cURL | `curl` no habilitado en PHP | Actívalo en php.ini o contacta al hosting |
-| El email no se envía | Credenciales SMTP incorrectas | Verifica usuario/contraseña y que el buzón exista |
-| Error TLS | Puerto o `smtp_secure` incorrecto | Prueba cambiando a puerto 465 con `ssl` |
+| El email no se envía | Credenciales SMTP incorrectas | Verifica usuario, contraseña y que el buzón exista |
+| Error TLS | Puerto o `smtp_secure` incorrecto | Prueba 465 con `ssl` o 587 con `tls` |
 | Tokens siempre en 0 | `max_tokens` muy bajo | Auméntalo en `config.php` |
+| El bot responde cosas fuera del tema | System prompt incompleto | Añade reglas de exclusión en `$systemPrompt` |
 
 ---
 
@@ -300,4 +575,5 @@ Uso educativo y personal. Para uso comercial, contacta con el autor.
 
 ---
 
-*Desarrollado con PHP, OpenAI API y mucho marketing digital.* 🚀
+*Desarrollado con PHP y OpenAI API.* 🚀
+
